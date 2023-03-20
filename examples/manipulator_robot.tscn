@@ -1,0 +1,329 @@
+[gd_scene load_steps=24 format=3 uid="uid://1tqtam7y0gig"]
+
+[ext_resource type="Script" path="res://addons/actuator3d/nodes/rotation_actuator.gd" id="1_kdcv3"]
+[ext_resource type="Script" path="res://addons/actuator3d/controllers/pid_control.gd" id="2_bk7ma"]
+[ext_resource type="Script" path="res://addons/control_camera3d/nodes/control_camera_3d.gd" id="2_ppd48"]
+[ext_resource type="Script" path="res://examples/UI.gd" id="4_f6b1c"]
+[ext_resource type="Script" path="res://examples/frame_ui.gd" id="4_jeraq"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_qokb5"]
+size = Vector3(1, 0.232988, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_uof2f"]
+size = Vector3(1, 0.244, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2c2ci"]
+albedo_color = Color(0.266667, 0.752941, 0.6, 1)
+
+[sub_resource type="Resource" id="Resource_q7n13"]
+script = ExtResource("2_bk7ma")
+Kp = 1.0
+Ki = 0.0
+Kd = 0.5
+integral_saturation = 1.0
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_1sius"]
+size = Vector3(0.454491, 0.375174, 0.301738)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_ke1r0"]
+top_radius = 0.3
+bottom_radius = 0.3
+height = 0.5
+
+[sub_resource type="Gradient" id="Gradient_1euve"]
+interpolation_mode = 1
+offsets = PackedFloat32Array(0, 0.246106, 0.548287, 0.806854)
+colors = PackedColorArray(0.280237, 0.371439, 0.971467, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_br6tq"]
+gradient = SubResource("Gradient_1euve")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_b1ok5"]
+albedo_color = Color(0.227451, 0.509804, 0.94902, 1)
+albedo_texture = SubResource("GradientTexture1D_br6tq")
+
+[sub_resource type="Resource" id="Resource_yr8pf"]
+script = ExtResource("2_bk7ma")
+Kp = 5.0
+Ki = 0.5
+Kd = 1.0
+integral_saturation = 1.0
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ehvdp"]
+size = Vector3(0.454491, 0.375174, 0.301738)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_qr6gw"]
+top_radius = 0.2
+bottom_radius = 0.2
+height = 0.3
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_t0y53"]
+albedo_color = Color(0.921569, 0.176471, 0.439216, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_l8g5n"]
+top_radius = 0.1
+bottom_radius = 0.1
+height = 1.0
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ebh84"]
+size = Vector3(0.197, 1, 0.18)
+
+[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_dvlvj"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_fjmmp"]
+size = Vector2(20, 20)
+
+[sub_resource type="Environment" id="Environment_dctbo"]
+background_mode = 1
+background_color = Color(0.164706, 0.317647, 0.396078, 1)
+
+[node name="TestManipulator" type="Node3D"]
+
+[node name="Manipulator" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.135489, 0)
+mass = 40.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Manipulator"]
+shape = SubResource("BoxShape3D_qokb5")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Manipulator"]
+mesh = SubResource("BoxMesh_uof2f")
+surface_material_override/0 = SubResource("StandardMaterial3D_2c2ci")
+
+[node name="MotorBase" type="RigidBody3D" parent="Manipulator"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, -8.73049e-05, 1, 0, -1, -8.73049e-05, 1.45519e-11, 0.425673, -3.71634e-05)
+mass = 10.0
+script = ExtResource("1_kdcv3")
+actuator_type = "SERVO"
+motor_gain = 6.0
+motor_damping = 2.0
+servo_gain = 200.0
+controllers = Array[Resource("res://addons/actuator3d/controllers/controller.gd")]([SubResource("Resource_q7n13")])
+metadata/_edit_group_ = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Manipulator/MotorBase"]
+shape = SubResource("BoxShape3D_1sius")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Manipulator/MotorBase"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
+mesh = SubResource("CylinderMesh_ke1r0")
+surface_material_override/0 = SubResource("StandardMaterial3D_b1ok5")
+
+[node name="Actuator1" type="RigidBody3D" parent="Manipulator/MotorBase"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, -4.3714e-08, -1, 0, 1, -4.3714e-08, 0, 0.547793, -4.71771e-05)
+rotation_order = 0
+mass = 10.0
+script = ExtResource("1_kdcv3")
+actuator_type = "SERVO"
+servo_gain = 150.0
+servo_damping = 20.0
+controllers = Array[Resource("res://addons/actuator3d/controllers/controller.gd")]([SubResource("Resource_yr8pf")])
+metadata/_edit_group_ = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Manipulator/MotorBase/Actuator1"]
+shape = SubResource("BoxShape3D_ehvdp")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Manipulator/MotorBase/Actuator1"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
+mesh = SubResource("CylinderMesh_qr6gw")
+surface_material_override/0 = SubResource("StandardMaterial3D_t0y53")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="Manipulator/MotorBase/Actuator1"]
+transform = Transform3D(1, 6.6815e-22, 0, 6.6815e-22, 1, 0, 0, 0, 1, 7.10543e-15, 0.615592, 5.96046e-08)
+mesh = SubResource("CylinderMesh_l8g5n")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="Manipulator/MotorBase/Actuator1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.612632, 0)
+shape = SubResource("BoxShape3D_ebh84")
+
+[node name="Actuator2" type="RigidBody3D" parent="Manipulator/MotorBase/Actuator1"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.189, 5.96046e-08)
+rotation_order = 0
+script = ExtResource("1_kdcv3")
+actuator_type = "SERVO"
+servo_gain = 150.0
+servo_damping = 20.0
+angle_profile = -2.0
+metadata/_edit_group_ = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Manipulator/MotorBase/Actuator1/Actuator2"]
+shape = SubResource("BoxShape3D_ehvdp")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Manipulator/MotorBase/Actuator1/Actuator2"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
+mesh = SubResource("CylinderMesh_qr6gw")
+surface_material_override/0 = SubResource("StandardMaterial3D_t0y53")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="Manipulator/MotorBase/Actuator1/Actuator2"]
+transform = Transform3D(1, 6.6815e-22, 0, 6.6815e-22, 1, 0, 0, 0, 1, 7.10543e-15, 0.642798, -5.96046e-08)
+mesh = SubResource("CylinderMesh_l8g5n")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="Manipulator/MotorBase/Actuator1/Actuator2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.639838, 0)
+shape = SubResource("BoxShape3D_ebh84")
+
+[node name="Actuator3" type="RigidBody3D" parent="Manipulator/MotorBase/Actuator1/Actuator2"]
+unique_name_in_owner = true
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 1.20425, 0.000178576)
+rotation_order = 0
+mass = 0.1
+script = ExtResource("1_kdcv3")
+actuator_type = "SERVO"
+servo_gain = 100.0
+metadata/_edit_group_ = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Manipulator/MotorBase/Actuator1/Actuator2/Actuator3"]
+transform = Transform3D(1, 0, 0, 0, 1, -7.27596e-12, 0, 7.27596e-12, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_ehvdp")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Manipulator/MotorBase/Actuator1/Actuator2/Actuator3"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
+mesh = SubResource("CylinderMesh_qr6gw")
+surface_material_override/0 = SubResource("StandardMaterial3D_t0y53")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="Manipulator/MotorBase/Actuator1/Actuator2/Actuator3"]
+transform = Transform3D(1, 0, 0, 0, 1, -7.27596e-12, 0, 7.27596e-12, 1, 0, 0.621633, -5.96078e-08)
+mesh = SubResource("CylinderMesh_l8g5n")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="Manipulator/MotorBase/Actuator1/Actuator2/Actuator3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.618673, 3.55271e-15)
+shape = SubResource("BoxShape3D_ebh84")
+
+[node name="ControlCamera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.999715, 0.0238621, 0, -0.0238621, 0.999715, 0, 2.70361, 5.30439)
+current = true
+script = ExtResource("2_ppd48")
+pivot_pos = Vector3(0, 2.577, 0)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.766684, 0.642025, 0, -0.642025, 0.766684, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.44587, 2.4014)
+visible = false
+projection = 1
+size = 4.48241
+
+[node name="Ground" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground"]
+shape = SubResource("WorldBoundaryShape3D_dvlvj")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Ground"]
+mesh = SubResource("PlaneMesh_fjmmp")
+
+[node name="UI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("4_f6b1c")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI"]
+layout_mode = 0
+offset_left = 41.0
+offset_top = 45.0
+offset_right = 321.0
+offset_bottom = 87.0
+
+[node name="Frame0" type="HBoxContainer" parent="UI/VBoxContainer"]
+layout_mode = 2
+script = ExtResource("4_jeraq")
+
+[node name="Label" type="Label" parent="UI/VBoxContainer/Frame0"]
+layout_mode = 2
+text = "Frame  0 :"
+
+[node name="q0Slider" type="HSlider" parent="UI/VBoxContainer/Frame0"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+min_value = -179.0
+max_value = 179.0
+scrollable = false
+tick_count = 3
+ticks_on_borders = true
+
+[node name="qValue" type="Label" parent="UI/VBoxContainer/Frame0"]
+layout_mode = 2
+
+[node name="Frame1" type="HBoxContainer" parent="UI/VBoxContainer"]
+layout_mode = 2
+script = ExtResource("4_jeraq")
+
+[node name="Label" type="Label" parent="UI/VBoxContainer/Frame1"]
+layout_mode = 2
+text = "Frame  1 :"
+
+[node name="q1Slider" type="HSlider" parent="UI/VBoxContainer/Frame1"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+min_value = -179.0
+max_value = 179.0
+scrollable = false
+tick_count = 3
+ticks_on_borders = true
+
+[node name="qValue" type="Label" parent="UI/VBoxContainer/Frame1"]
+layout_mode = 2
+
+[node name="Frame2" type="HBoxContainer" parent="UI/VBoxContainer"]
+layout_mode = 2
+script = ExtResource("4_jeraq")
+
+[node name="Label" type="Label" parent="UI/VBoxContainer/Frame2"]
+layout_mode = 2
+text = "Frame  2 :"
+
+[node name="q2Slider" type="HSlider" parent="UI/VBoxContainer/Frame2"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+min_value = -179.0
+max_value = 179.0
+scrollable = false
+tick_count = 3
+ticks_on_borders = true
+
+[node name="qValue" type="Label" parent="UI/VBoxContainer/Frame2"]
+layout_mode = 2
+
+[node name="Frame3" type="HBoxContainer" parent="UI/VBoxContainer"]
+layout_mode = 2
+script = ExtResource("4_jeraq")
+
+[node name="Label" type="Label" parent="UI/VBoxContainer/Frame3"]
+layout_mode = 2
+text = "Frame  3 :"
+
+[node name="q3Slider" type="HSlider" parent="UI/VBoxContainer/Frame3"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+min_value = -179.0
+max_value = 179.0
+scrollable = false
+tick_count = 3
+ticks_on_borders = true
+
+[node name="qValue" type="Label" parent="UI/VBoxContainer/Frame3"]
+layout_mode = 2
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_dctbo")
+
+[connection signal="drag_ended" from="UI/VBoxContainer/Frame0/q0Slider" to="UI" method="_on_q_0_slider_drag_ended"]
+[connection signal="value_changed" from="UI/VBoxContainer/Frame0/q0Slider" to="UI/VBoxContainer/Frame0" method="_on_q_slider_value_changed"]
+[connection signal="drag_ended" from="UI/VBoxContainer/Frame1/q1Slider" to="UI" method="_on_q_1_slider_drag_ended"]
+[connection signal="value_changed" from="UI/VBoxContainer/Frame1/q1Slider" to="UI/VBoxContainer/Frame1" method="_on_q_slider_value_changed"]
+[connection signal="drag_ended" from="UI/VBoxContainer/Frame2/q2Slider" to="UI" method="_on_q_2_slider_drag_ended"]
+[connection signal="value_changed" from="UI/VBoxContainer/Frame2/q2Slider" to="UI/VBoxContainer/Frame2" method="_on_q_slider_value_changed"]
+[connection signal="drag_ended" from="UI/VBoxContainer/Frame3/q3Slider" to="UI" method="_on_q_3_slider_drag_ended"]
+[connection signal="value_changed" from="UI/VBoxContainer/Frame3/q3Slider" to="UI/VBoxContainer/Frame3" method="_on_q_slider_value_changed"]

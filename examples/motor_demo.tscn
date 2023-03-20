@@ -1,0 +1,123 @@
+[gd_scene load_steps=17 format=3 uid="uid://c7u3hf8q0y0"]
+
+[ext_resource type="Script" path="res://addons/actuator3d/nodes/rotation_actuator.gd" id="1_1hsx1"]
+[ext_resource type="Script" path="res://addons/actuator3d/controllers/pid_control.gd" id="2_nxijt"]
+[ext_resource type="Script" path="res://examples/Obstacle.gd" id="3_eoxrg"]
+[ext_resource type="Script" path="res://addons/control_camera3d/nodes/control_camera_3d.gd" id="4_unljt"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_813ey"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_nm4yj"]
+
+[sub_resource type="Resource" id="Resource_4c6va"]
+script = ExtResource("2_nxijt")
+Kp = 1.0
+Ki = 5.0
+Kd = 2.0
+integral_saturation = 1.0
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_h6bhk"]
+size = Vector3(1, 3, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_3ywcf"]
+size = Vector3(1, 3, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hdt3c"]
+albedo_color = Color(0, 0.670588, 0.188235, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_073sx"]
+top_radius = 0.1
+bottom_radius = 0.1
+height = 1.533
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_0p3t0"]
+size = Vector3(1, 3, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_4pqae"]
+size = Vector3(1, 3, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dbosf"]
+albedo_color = Color(0, 0.498039, 0.921569, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_p1yiw"]
+size = Vector3(1, 1, 3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_a01vl"]
+size = Vector3(1, 1, 3)
+
+[node name="MotorDemo" type="Node3D"]
+
+[node name="StaticBase" type="RigidBody3D" parent="."]
+freeze = true
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBase"]
+mesh = SubResource("BoxMesh_813ey")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBase"]
+shape = SubResource("BoxShape3D_nm4yj")
+
+[node name="Motor1" type="RigidBody3D" parent="StaticBase"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.16081)
+script = ExtResource("1_1hsx1")
+actuator_type = "SERVO"
+rotation_speed = 1.0
+angle = 80.0
+servo_gain = 50.0
+controllers = Array[Resource("res://addons/actuator3d/controllers/controller.gd")]([SubResource("Resource_4c6va")])
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBase/Motor1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+shape = SubResource("BoxShape3D_h6bhk")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBase/Motor1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+mesh = SubResource("BoxMesh_3ywcf")
+surface_material_override/0 = SubResource("StandardMaterial3D_hdt3c")
+
+[node name="Shaft" type="MeshInstance3D" parent="StaticBase/Motor1"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
+mesh = SubResource("CylinderMesh_073sx")
+
+[node name="Motor2" type="RigidBody3D" parent="StaticBase/Motor1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, 1.074)
+script = ExtResource("1_1hsx1")
+actuator_type = "SERVO"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBase/Motor1/Motor2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+shape = SubResource("BoxShape3D_0p3t0")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBase/Motor1/Motor2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+mesh = SubResource("BoxMesh_4pqae")
+surface_material_override/0 = SubResource("StandardMaterial3D_dbosf")
+
+[node name="Shaft2" type="MeshInstance3D" parent="StaticBase/Motor1/Motor2"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
+mesh = SubResource("CylinderMesh_073sx")
+skeleton = NodePath("../..")
+
+[node name="Obstacle" type="AnimatableBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.482, 0, -1.1)
+script = ExtResource("3_eoxrg")
+metadata/_edit_group_ = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Obstacle"]
+shape = SubResource("BoxShape3D_p1yiw")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Obstacle"]
+mesh = SubResource("BoxMesh_a01vl")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Obstacle"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.482, 0, 1.1)
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.592357, 5)
+projection = 1
+current = true
+size = 12.0595
+
+[node name="ControlCamera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.999931, -0.0117283, 0, 0.0117283, 0.999931, 0, -0.0892088, 7.60575)
+current = true
+script = ExtResource("4_unljt")

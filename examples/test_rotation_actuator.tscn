@@ -1,0 +1,59 @@
+[gd_scene load_steps=10 format=3 uid="uid://vup0cpwcnu5s"]
+
+[ext_resource type="Script" path="res://addons/actuator3d/nodes/rotation_actuator.gd" id="1_b0012"]
+[ext_resource type="Script" path="res://addons/control_camera3d/nodes/control_camera_3d.gd" id="2_n15x2"]
+[ext_resource type="Texture2D" uid="uid://c7dmxyoyswgm7" path="res://icon.svg" id="2_nl6um"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_tfou6"]
+size = Vector3(1, 0.2, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_myjni"]
+size = Vector3(1, 0.2, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_0caxj"]
+size = Vector3(0.7, 0.7, 0.3)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_1th47"]
+size = Vector3(0.7, 0.7, 0.3)
+
+[sub_resource type="QuadMesh" id="QuadMesh_r6q4v"]
+size = Vector2(0.7, 0.7)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_81q4f"]
+albedo_texture = ExtResource("2_nl6um")
+
+[node name="TestRotationActuator" type="Node3D"]
+
+[node name="Base" type="RigidBody3D" parent="."]
+freeze = true
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Base"]
+visible = false
+mesh = SubResource("BoxMesh_tfou6")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Base"]
+shape = SubResource("BoxShape3D_myjni")
+
+[node name="RotationActuator3D" type="RigidBody3D" parent="Base"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.05865e-06, 0.328136, 0.00760004)
+rotation_order = 4
+script = ExtResource("1_b0012")
+actuator_type = "SERVO"
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Base/RotationActuator3D"]
+mesh = SubResource("BoxMesh_0caxj")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Base/RotationActuator3D"]
+shape = SubResource("BoxShape3D_1th47")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="Base/RotationActuator3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 2.98023e-08, 0, -2.98023e-08, 1, 0, 0, 0.154332)
+mesh = SubResource("QuadMesh_r6q4v")
+surface_material_override/0 = SubResource("StandardMaterial3D_81q4f")
+
+[node name="ControlCamera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.847998, 0.529999, 0, -0.529999, 0.847998, 0, 1.53, 2.448)
+script = ExtResource("2_n15x2")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.906308, 0.422618, 0, -0.422618, 0.906308, 0, 0, 0)

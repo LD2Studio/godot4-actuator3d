@@ -1,0 +1,23 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Actuators3D Addon"
+config/features=PackedStringArray("4.0", "Forward Plus")
+config/icon="res://icon.svg"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/control_camera3d/plugin.cfg", "res://addons/actuator3d/plugin.cfg")
+
+[physics]
+
+common/physics_ticks_per_second=240
