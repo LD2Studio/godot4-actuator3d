@@ -1,3 +1,4 @@
+@tool
 @icon("res://addons/actuator3d/nodes/rotation_actuator_3d.svg")
 ## Rotation actuator with two modes : MOTOR and SERVO
 class_name RotationActuator3D
@@ -12,11 +13,11 @@ extends RigidBody3D
 #				"MOTOR":
 #					_joint.set("angular_limit_z/enabled", false)
 #				"SERVO":
-#					print("SERVO")
 #					_joint.set("angular_limit_z/enabled", true)
-#					_joint.set("angular_limit_z/lower_angle", -180)
-#					_joint.set("angular_limit_z/uppers_angle", 180)
+#					_joint.set("angular_limit_z/lower_angle", deg_to_rad(-max_angle))
+#					_joint.set("angular_limit_z/uppers_angle", deg_to_rad(-min_angle))
 					
+@export var exclude_nodes_from_collision: bool = false
 
 @export_group("Motor parameters")
 ## Angular velocity along Z axis in rad/sec
@@ -35,8 +36,8 @@ extends RigidBody3D
 			_step_count = int(profile_duration * Engine.physics_ticks_per_second)
 			_step = 0
 #			print("in_angle: %f , out_angle: %f , step_count: %d" %[_in_angle, _out_angle, _step_count])
-		
-		Engine.physics_ticks_per_second
+#@export_range(-180, 180) var min_angle: float = -180
+#@export_range(-180, 180) var max_angle: float = 180
 @export var servo_gain: float = 20.0
 @export var servo_damping: float = 5.0
 @export_exp_easing var angle_profile: float = 1.0
@@ -45,10 +46,22 @@ extends RigidBody3D
 @export_group("Controller parameters")
 @export var controllers: Array[Controller]
 
+@export_group("Debug")
+@export var helper_size: float = 1.0:
+	set(value):
+		helper_size = value
+		if is_instance_valid(_help_meshinstance):
+			_help_meshinstance.scale = Vector3.ONE * helper_size
+
+## Current angular velocity in MOTOR mode
 var current_velocity: float
+## Current angle in SERVO mode
 var current_angle: float
 
-var _joint: Generic6DOFJoint3D
+var _joint := Generic6DOFJoint3D.new()
+var _help_meshinstance := MeshInstance3D.new()
+var _help_mesh := ImmediateMesh.new()
+var _help_mesh_material := StandardMaterial3D.new()
 var _pose_basis_inv: Basis = transform.basis.inverse()
 var _in_angle: float
 var _out_angle: float
@@ -56,17 +69,27 @@ var _step_count: int
 var _step: float
 
 func _enter_tree() -> void:
-	_joint = Generic6DOFJoint3D.new()
 	_joint.name = "HingeJoint"
 	_joint.set("angular_limit_z/enabled", false)
 	_joint.node_a = ^"../.."
 	_joint.node_b = ^"../"
+	_joint.exclude_nodes_from_collision = exclude_nodes_from_collision
 	add_child(_joint)
-
+	
+	_help_meshinstance.name = "HelpMeshInstance"
+	_help_meshinstance.mesh = _help_mesh
+	_help_meshinstance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	_help_mesh_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	add_child(_help_meshinstance)
+	
+func _exit_tree() -> void:
+	remove_child(_joint)
+	remove_child(_help_meshinstance)
 
 func _ready() -> void:
 	can_sleep = false
-
+	if Engine.is_editor_hint():
+		_draw_help()
 
 func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 	match actuator_type:
@@ -108,3 +131,31 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 #			print("angle: %f , vel: %f , err: %f , cmd: %f" %[rad_to_deg(current_angle), current_velocity, err, torque_cmd])
 			apply_torque(global_transform.basis.z * (torque_cmd))
 			
+func _draw_help():
+	var edges = 24
+	var vertices = []
+	for i in range(edges+1):
+		var vertex = Vector3(cos(TAU/edges * i), sin(TAU/edges * i), 0)
+		vertices.append(vertex)
+	
+	_help_mesh.surface_begin(Mesh.PRIMITIVE_LINE_STRIP, _help_mesh_material)
+	for vertex in vertices:
+		_help_mesh.surface_add_vertex(vertex)
+	_help_mesh.surface_end()
+	
+	vertices.clear()
+	var arrows = 4
+	for i in range(arrows):
+		vertices.append(Vector3(cos(TAU/arrows * i), sin(TAU/arrows * i), 0))
+		vertices.append(Vector3(cos(TAU/arrows * i), sin(TAU/arrows * i), 0) + 
+				Vector3(0.1, -0.1, 0).rotated(Vector3.BACK, TAU/arrows * i))
+		vertices.append(Vector3(cos(TAU/arrows * i), sin(TAU/arrows * i), 0))
+		vertices.append(Vector3(cos(TAU/arrows * i), sin(TAU/arrows * i), 0) + 
+				Vector3(-0.1, -0.1, 0).rotated(Vector3.BACK, TAU/arrows * i))
+#	print(vertices)
+	_help_mesh.surface_begin(Mesh.PRIMITIVE_LINES, _help_mesh_material)
+	for vertex in vertices:
+		_help_mesh.surface_add_vertex(vertex)
+	_help_mesh.surface_end()
+	
+	_help_meshinstance.scale = Vector3.ONE * helper_size

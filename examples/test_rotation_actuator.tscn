@@ -37,10 +37,15 @@ shape = SubResource("BoxShape3D_myjni")
 [node name="RotationActuator3D" type="RigidBody3D" parent="Base"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.05865e-06, 0.328136, 0.00760004)
 rotation_order = 4
+can_sleep = false
 script = ExtResource("1_b0012")
 actuator_type = "SERVO"
+exclude_nodes_from_collision = true
+angle = 150.0
+helper_size = null
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Base/RotationActuator3D"]
+visible = false
 mesh = SubResource("BoxMesh_0caxj")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Base/RotationActuator3D"]
@@ -48,6 +53,7 @@ shape = SubResource("BoxShape3D_1th47")
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="Base/RotationActuator3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 2.98023e-08, 0, -2.98023e-08, 1, 0, 0, 0.154332)
+visible = false
 mesh = SubResource("QuadMesh_r6q4v")
 surface_material_override/0 = SubResource("StandardMaterial3D_81q4f")
 
