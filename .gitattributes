@@ -11,3 +11,4 @@
 /icon.png           export-ignore
 /icon.svg           export-ignore
 screenshots         export-ignore
+/addons/control_camera3d export-ignore
