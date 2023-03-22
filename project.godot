@@ -16,7 +16,7 @@ config/icon="res://icon.svg"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/control_camera3d/plugin.cfg", "res://addons/actuator3d/plugin.cfg")
+enabled=PackedStringArray("res://addons/control_camera3d/plugin.cfg", "res://addons/actuator3d/plugin.cfg", "res://addons/graph_2d/plugin.cfg")
 
 [physics]
 

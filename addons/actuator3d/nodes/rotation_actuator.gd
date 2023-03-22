@@ -7,23 +7,27 @@ extends RigidBody3D
 @export_enum("MOTOR", "SERVO") var actuator_type = "MOTOR":
 	set(value):
 		actuator_type = value
-#		print_debug(get_node_or_null("HingeJoint"))
-#		if get_node_or_null("HingeJoint"):
-#			match actuator_type:
-#				"MOTOR":
-#					_joint.set("angular_limit_z/enabled", false)
-#				"SERVO":
-#					_joint.set("angular_limit_z/enabled", true)
-#					_joint.set("angular_limit_z/lower_angle", deg_to_rad(-max_angle))
-#					_joint.set("angular_limit_z/uppers_angle", deg_to_rad(-min_angle))
-					
+
 @export var exclude_nodes_from_collision: bool = false
 
 @export_group("Motor parameters")
 ## Angular velocity along Z axis in rad/sec
-@export var rotation_speed: float = 0.0
-@export var motor_gain: float = 1.0 # Couple
-@export var motor_damping: float = 0.1 # Frottement visqueux
+@export var rotation_velocity: float = 0.0
+## Constant of the motor torque ; too high a value can make the motor's behavior unstable
+@export var motor_torque: float = 1.0:
+	set(value):
+#		print(_inertia_shaft * Engine.physics_ticks_per_second)
+		if _inertia_shaft == 0:
+			motor_torque = value
+			return
+		if value <= (_inertia_shaft * Engine.physics_ticks_per_second):
+			print("change value: ", value)
+			motor_torque = value
+		else:
+			value = _inertia_shaft * Engine.physics_ticks_per_second
+			motor_torque = value
+			printerr("Higher constant torque motor can make the motor unstable!")
+#@export var motor_damping: float = 0.1 # Frottement visqueux
 
 @export_group("Servo parameters")
 ## Desired angle value in °
@@ -67,6 +71,7 @@ var _in_angle: float
 var _out_angle: float
 var _step_count: int
 var _step: float
+var _inertia_shaft: float
 
 func _enter_tree() -> void:
 	_joint.name = "HingeJoint"
@@ -88,23 +93,27 @@ func _exit_tree() -> void:
 
 func _ready() -> void:
 	can_sleep = false
+	
 	if Engine.is_editor_hint():
 		_draw_help()
+
 
 func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 	match actuator_type:
 		"MOTOR":
+			_inertia_shaft = PhysicsServer3D.body_get_direct_state(get_node(".").get_rid()).inverse_inertia.inverse().z
 			current_velocity = (global_transform.inverse().basis * angular_velocity).z
 		#	print(current_velocity)
-			var err = rotation_speed - current_velocity
-			var x: float
-			if controllers.is_empty():
-				x = err
-			else:
-				x = err
-				for controller in controllers:
-					x = controller.process(x)
-			var torque_cmd =  motor_gain * x - motor_damping * current_velocity # DC Motor simplify model
+#			var err = rotation_velocity - current_velocity
+#			var u: float
+#			if controllers.is_empty():
+#				u = err
+#			else:
+#				u = err
+#				for controller in controllers:
+#					u = controller.process(u)
+#			var torque_cmd =  motor_gain * u - motor_damping * current_velocity # DC Motor simplify model
+			var torque_cmd : float = motor_torque * (rotation_velocity - current_velocity)	# DC motor first order model
 			apply_torque(global_transform.basis.z * (torque_cmd))
 		"SERVO":
 			var basis_not_tranformed = _pose_basis_inv * transform.basis
