@@ -53,7 +53,7 @@ func _enter_tree() -> void:
 
 
 func _ready() -> void:
-	can_sleep = false	
+	can_sleep = false
 	current_pos_x = (transform.inverse().basis * (position - _pose_position)).x
 
 	

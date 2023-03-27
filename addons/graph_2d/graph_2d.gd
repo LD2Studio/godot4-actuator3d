@@ -3,55 +3,63 @@
 extends Control
 class_name Graph2D
 
+@export_group("X Axis")
+## Minimun value on X-axis
+@export var x_min: float = 0.0:
+	set(value):
+		if value < x_max:
+			x_step = _get_min_step(value, x_max)
+			x_min = get_min_value(value, x_max, x_step)
+			update_graph()
+			update_plots()
+## Maximum value on X-axis
+@export var x_max: float = 10.0:
+	set(value):
+		if value > x_min:
+			x_step = _get_min_step(x_min, value)
+			x_max = get_max_value(x_min, value, x_step)
+			update_graph()
+			update_plots()
+
+@export var x_label: String = "":
+	set(value):
+		x_label = value
+		update_graph()
+
+@export_group("Y Axis")
+## Minimun value on Y-axis
+@export var y_min = 0.0:
+	set(value):
+		if value < y_max:
+			y_step = _get_min_step(value, y_max)
+#			print_debug("y step: ", y_step)
+			y_min = get_min_value(value, y_max, y_step)
+#			print_debug("y_min: ", y_min)
+			update_graph()
+			update_plots()
+## Maximum value on Y-axis
+@export var y_max = 1.0:
+	set(value):
+		if value > y_min:
+			y_step = _get_min_step(y_min, value)
+			y_max = get_max_value(y_min, value, y_step)
+#			print_debug("y_max: ", y_max)
+			update_graph()
+			update_plots()
+
+## Y-axis label
+@export var y_label: String = "":
+	set(value):
+		y_label = value
+		update_graph()
+		
+@export_group("Background")
 ## background color of graph
 @export var background_color = Color.BLACK:
 	set(value):
 		background_color = value
 		if get_node_or_null("Background"):
 			get_node("Background").color = background_color
-
-@export_group("X Axis")
-## Minimun value on X-axis
-@export var x_min: float = 0.0:
-	set(value):
-		x_min = value
-		update_graph()
-## Maximum value on X-axis
-@export var x_max: float = 10.0:
-	set(value):
-		x_max = value
-		update_graph()
-## Number of graduations on the X-axis
-@export var x_grad_num: int = 11:
-	set(value):
-		x_grad_num = value
-		update_graph()
-## X-axis label
-@export var x_label: String = "":
-	set(value):
-		x_label = value
-		update_graph()
-		
-@export_group("Y Axis")
-## Minimun value on Y-axis
-@export var y_min = 0.0:
-	set(value):
-		y_min = value
-		update_graph()
-## Maximum value on Y-axis
-@export var y_max = 1.0:
-	set(value):
-		y_max = value
-		update_graph()
-## Number of graduations on the Y-axis
-@export var y_grad_num = 7:
-	set(value):
-		y_grad_num = value
-		update_graph()
-## Y-axis label
-@export var y_label: String = ""
-		
-@export_group("Grid")
 ## Grid visibility
 @export var grid_horizontal_visible = false:
 	set(value):
@@ -73,10 +81,13 @@ const Graph2DCoord = preload("res://addons/graph_2d/custom_nodes/coordinate.gd")
 const Graph2DGrid = preload("res://addons/graph_2d/custom_nodes/grid.gd")
 const Graph2DLegend = preload("res://addons/graph_2d/custom_nodes/legend.gd")
 
-var plot_list: Array
-var active_plot: Plot
+var plots: Array
 
-class Plot:
+var x_step: float
+var y_step: float
+
+
+class PlotItem:
 	var curve: LinePlot
 	var points: PackedVector2Array
 	var graph: Graph2D
@@ -108,6 +119,8 @@ class Plot:
 	func redraw():
 		curve.points_px.clear()
 		for pt in points:
+#			print_debug("Plot redraw %s" % pt)
+			if pt.x > graph.x_max or pt.x < graph.x_min: continue
 			var point = pt.clamp(Vector2(graph.x_min, graph.y_min), Vector2(graph.x_max, graph.y_max))
 			var pt_px: Vector2
 			pt_px.x = remap(point.x, graph.x_min, graph.x_max, 0, graph.get_node("PlotArea").size.x)
@@ -163,38 +176,23 @@ func _input(event: InputEvent) -> void:
 
 	if event is InputEventMouseMotion:
 		var plot_rect: Rect2 = Rect2(Vector2.ZERO, get_node("PlotArea").size)
-#		print("plot rect: ", plot_rect)
-#		print(get_node("PlotArea").get_local_mouse_position())
+		
 		if plot_rect.has_point(get_node("PlotArea").get_local_mouse_position()):
 			var pos: Vector2i = get_node("PlotArea").get_local_mouse_position()
 			var point = pixel_to_coordinate(pos)
 			get_node("PlotArea/Coordinate").text = "(%.3f, %.3f)" % [point.x, point.y]
-						
-#			var points = Array(active_plot.points)
-#			var times = points.map(func(pt): return pt.x)
-##			print("times: ", times)
-#			var diff = times.map(func(t): return abs(t - point.x))
-##			print(diff)
-#			var min_pt = diff.min()
-##			print(min_pt)
-#			var idx = diff.find(min_pt)
-##			print("idx: ", idx)
-#			if idx != -1:
-##				print("t=", times[idx])
-#				print("pt: ", points[idx])
 
 ## Add plot in Graph2D and return an instance of plot
-func add_plot(label = "untitled", color = Color.WHITE, width = 1.0) -> Plot:
-	var plot = Plot.new(self, label, color, width)
-	plot_list.append(plot)
+func add_plot_item(label = "", color = Color.WHITE, width = 1.0) -> PlotItem:
+	var plot = PlotItem.new(self, label, color, width)
+	plots.append(plot)
 	update_legend()
-	active_plot = plot
 	return plot
 
-func remove_plot(plot: Plot):
+func remove_plot_item(plot: PlotItem):
 	# remove from plot_list
-	var new_plot_list = plot_list.filter(func(p): return p!=plot)
-	plot_list = new_plot_list
+	var new_plot_list = plots.filter(func(p): return p!=plot)
+	plots = new_plot_list
 	plot.clear()
 	plot.curve.queue_free()
 	# unreference plot object
@@ -222,11 +220,19 @@ func update_graph() -> void:
 	get_node("PlotArea").offset_bottom = -margin_bottom
 	
 	# Vertical Graduation
+	var y_step = _get_min_step(y_min, y_max)
+	assert(not is_inf(y_step), "y_step is infinite!")
+
 	var y_axis_range: float = y_max - y_min
-	var vert_grad_number = y_grad_num
+	var vert_grad_number = _get_graduation_num(y_min, y_max, y_step, "vert")
+	
 	# Horizontal Graduation
+	var x_step = _get_min_step(x_min, x_max)
+	assert(not is_inf(x_step), "y_step is infinite!")
+	
 	var x_axis_range: float = x_max - x_min
-	var hor_grad_number = x_grad_num
+	var hor_grad_number = _get_graduation_num(x_min, x_max, x_step, "hor")
+	
 	# Plot area height in pixel
 	var area_height = size.y - MARGIN_TOP - margin_bottom
 	var vert_grad_step_px = area_height / (vert_grad_number - 1)
@@ -238,7 +244,7 @@ func update_graph() -> void:
 	var hor_grid: Array
 	var grad_px: Vector2
 	grad_px.x = margin_left
-	
+	# Draw grid number
 	for n in range(vert_grad_number):
 		var grad: Array = []
 		grad_px.y = MARGIN_TOP + n * vert_grad_step_px
@@ -292,13 +298,13 @@ func update_graph() -> void:
 	get_node("Grid").queue_redraw()
 	
 func update_plots():
-	for plot in plot_list:
+	for plot in plots:
 		plot.redraw()
 
 func update_legend() -> void:
 	# Add labels to the legend
 	var labels = Array()
-	for p in plot_list:
+	for p in plots:
 		labels.append({
 			name = p.label,
 			color = p.curve.color,
@@ -310,3 +316,113 @@ func _on_Graph_resized() -> void:
 	
 func _on_plot_area_resized() -> void:
 	update_plots()
+
+## This function return the minimal step
+func _get_min_step(value_min, value_max):
+	var range_log: int = int(log10(value_max - value_min))
+#	print("range log: ", range_log)
+	var step: float = 10.0**(range_log-1)
+#	print("min step: %f " % [step])
+	return step
+
+func _get_graduation_num(value_min, value_max, step, orientation) -> int:
+	var diff = value_max - value_min
+	var nb_grad: int = roundi(diff/step)
+	var max_grad_num: int
+	match orientation:
+		"vert":
+			if size.y < 250: max_grad_num = 5
+			else: max_grad_num = 10
+		"hor":
+			if size.x < 450: max_grad_num = 5
+			else: max_grad_num = 10
+	
+	while nb_grad > max_grad_num:
+#		print("->", nb_grad)
+		if not nb_grad % 2:
+			nb_grad /= 2
+			continue
+		elif not nb_grad % 3:
+			nb_grad /= 3
+			continue
+		elif not nb_grad % 5:
+			nb_grad /= 5
+			continue
+		elif not nb_grad % 7:
+			nb_grad /= 7
+			continue
+		elif not nb_grad % 9:
+			nb_grad /= 9
+			continue
+		else:
+			# not divided
+			break
+#			return nb_grad + 1
+			
+#	print("diff: %f , nb_grad: %d" % [diff, nb_grad])
+	return nb_grad + 1
+	
+func get_min_value(min_value, max_value, step):
+	var min_token = roundf(min_value/step) * step
+	
+	while true:
+		var diff = max_value - min_token
+		var nb_grad: int = roundi(diff/step)
+		
+		while nb_grad > 10:
+	#		print("->", nb_grad)
+			if not nb_grad % 2:
+				nb_grad /= 2
+				continue
+			elif not nb_grad % 3:
+				nb_grad /= 3
+				continue
+			elif not nb_grad % 5:
+				nb_grad /= 5
+				continue
+			elif not nb_grad % 7:
+				nb_grad /= 7
+				continue
+			elif not nb_grad % 9:
+				nb_grad /= 9
+				continue
+			else:
+				# not divided
+				break
+		if nb_grad <= 10:
+			return min_token
+		min_token -= step
+	
+func get_max_value(min_value, max_value, step):
+	var max_token = roundf(max_value/step) * step
+	
+	while true:
+		var diff = max_token - min_value
+		var nb_grad: int = roundi(diff/step)
+
+		while nb_grad > 10:
+	#		print("->", nb_grad)
+			if not nb_grad % 2:
+				nb_grad /= 2
+				continue
+			elif not nb_grad % 3:
+				nb_grad /= 3
+				continue
+			elif not nb_grad % 5:
+				nb_grad /= 5
+				continue
+			elif not nb_grad % 7:
+				nb_grad /= 7
+				continue
+			elif not nb_grad % 9:
+				nb_grad /= 9
+				continue
+			else:
+				# not divided
+				break
+		if nb_grad <= 10:
+			return max_token
+		max_token += step
+		
+func log10(value: float) -> float:
+	return log(value)/log(10)

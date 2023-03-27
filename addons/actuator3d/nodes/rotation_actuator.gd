@@ -12,21 +12,17 @@ extends RigidBody3D
 
 @export_group("Motor parameters")
 ## Angular velocity along Z axis in rad/sec
-@export var rotation_velocity: float = 0.0
+@export var desired_velocity: float = 0.0
 ## Constant of the motor torque ; too high a value can make the motor's behavior unstable
-@export var motor_torque: float = 1.0:
+@export var torque_constant: float = 1.0:
 	set(value):
-#		print(_inertia_shaft * Engine.physics_ticks_per_second)
+		torque_constant = value
 		if _inertia_shaft == 0:
-			motor_torque = value
+			torque_constant = value
 			return
-		if value <= (_inertia_shaft * Engine.physics_ticks_per_second):
-			print("change value: ", value)
-			motor_torque = value
-		else:
-			value = _inertia_shaft * Engine.physics_ticks_per_second
-			motor_torque = value
+		if value > (_inertia_shaft * Engine.physics_ticks_per_second):
 			printerr("Higher constant torque motor can make the motor unstable!")
+			
 #@export var motor_damping: float = 0.1 # Frottement visqueux
 
 @export_group("Servo parameters")
@@ -40,9 +36,7 @@ extends RigidBody3D
 			_step_count = int(profile_duration * Engine.physics_ticks_per_second)
 			_step = 0
 #			print("in_angle: %f , out_angle: %f , step_count: %d" %[_in_angle, _out_angle, _step_count])
-#@export_range(-180, 180) var min_angle: float = -180
-#@export_range(-180, 180) var max_angle: float = 180
-@export var servo_gain: float = 20.0
+
 @export var servo_damping: float = 5.0
 @export_exp_easing var angle_profile: float = 1.0
 @export_range(0.1, 2, 0.1) var profile_duration: float = 1.0
@@ -99,21 +93,19 @@ func _ready() -> void:
 
 
 func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
+	_inertia_shaft = PhysicsServer3D.body_get_direct_state(get_node(".").get_rid()).inverse_inertia.inverse().z
 	match actuator_type:
 		"MOTOR":
-			_inertia_shaft = PhysicsServer3D.body_get_direct_state(get_node(".").get_rid()).inverse_inertia.inverse().z
 			current_velocity = (global_transform.inverse().basis * angular_velocity).z
-		#	print(current_velocity)
-#			var err = rotation_velocity - current_velocity
-#			var u: float
-#			if controllers.is_empty():
-#				u = err
-#			else:
-#				u = err
-#				for controller in controllers:
-#					u = controller.process(u)
-#			var torque_cmd =  motor_gain * u - motor_damping * current_velocity # DC Motor simplify model
-			var torque_cmd : float = motor_torque * (rotation_velocity - current_velocity)	# DC motor first order model
+			var err = desired_velocity - current_velocity
+			var u: float
+			if controllers.is_empty():
+				u = err
+			else:
+				u = err
+				for controller in controllers:
+					u = controller.process(u)
+			var torque_cmd : float = torque_constant * u
 			apply_torque(global_transform.basis.z * (torque_cmd))
 		"SERVO":
 			var basis_not_tranformed = _pose_basis_inv * transform.basis
@@ -136,7 +128,8 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 				x = err
 				for controller in controllers:
 					x = controller.process(x)
-			var torque_cmd = servo_gain * x - servo_damping * current_velocity
+			var torque_cmd = torque_constant * x - servo_damping * current_velocity
+#			var torque_cmd = servo_gain * x - servo_damping * current_velocity
 #			print("angle: %f , vel: %f , err: %f , cmd: %f" %[rad_to_deg(current_angle), current_velocity, err, torque_cmd])
 			apply_torque(global_transform.basis.z * (torque_cmd))
 			
