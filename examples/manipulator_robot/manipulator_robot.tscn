@@ -1,10 +1,10 @@
-[gd_scene load_steps=24 format=3 uid="uid://1tqtam7y0gig"]
+[gd_scene load_steps=24 format=3]
 
 [ext_resource type="Script" path="res://addons/actuator3d/nodes/rotation_actuator.gd" id="1_kdcv3"]
 [ext_resource type="Script" path="res://addons/actuator3d/controllers/pid_control.gd" id="2_bk7ma"]
 [ext_resource type="Script" path="res://addons/control_camera3d/nodes/control_camera_3d.gd" id="2_ppd48"]
-[ext_resource type="Script" path="res://examples/UI.gd" id="4_f6b1c"]
-[ext_resource type="Script" path="res://examples/frame_ui.gd" id="4_jeraq"]
+[ext_resource type="Script" path="res://examples/manipulator_robot/UI.gd" id="4_f6b1c"]
+[ext_resource type="Script" path="res://examples/manipulator_robot/frame_ui.gd" id="4_jeraq"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_qokb5"]
 size = Vector3(1, 0.232988, 1)
@@ -45,8 +45,8 @@ albedo_texture = SubResource("GradientTexture1D_br6tq")
 [sub_resource type="Resource" id="Resource_yr8pf"]
 script = ExtResource("2_bk7ma")
 Kp = 5.0
-Ki = 0.5
-Kd = 1.0
+Ki = 0.0
+Kd = 0.0
 integral_saturation = 1.0
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ehvdp"]
@@ -97,7 +97,7 @@ mass = 10.0
 can_sleep = false
 script = ExtResource("1_kdcv3")
 actuator_type = "SERVO"
-motor_torque = 200.0
+torque_constant = 100.0
 controllers = Array[Resource("res://addons/actuator3d/controllers/controller.gd")]([SubResource("Resource_q7n13")])
 helper_size = 0.4
 metadata/_edit_group_ = true
@@ -119,7 +119,7 @@ can_sleep = false
 script = ExtResource("1_kdcv3")
 actuator_type = "SERVO"
 exclude_nodes_from_collision = true
-motor_torque = 300.0
+torque_constant = 200.0
 servo_damping = 20.0
 angle_profile = -1.66435
 controllers = Array[Resource("res://addons/actuator3d/controllers/controller.gd")]([SubResource("Resource_yr8pf")])
@@ -150,7 +150,7 @@ can_sleep = false
 script = ExtResource("1_kdcv3")
 actuator_type = "SERVO"
 exclude_nodes_from_collision = true
-motor_torque = 300.0
+torque_constant = 100.0
 servo_damping = 20.0
 angle_profile = -4.92457
 profile_duration = 2.0
@@ -181,7 +181,7 @@ can_sleep = false
 script = ExtResource("1_kdcv3")
 actuator_type = "SERVO"
 exclude_nodes_from_collision = true
-motor_torque = 100.0
+torque_constant = 100.0
 helper_size = 0.3
 metadata/_edit_group_ = true
 

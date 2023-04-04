@@ -20,16 +20,18 @@ extends RigidBody3D
 @export var force_gain: float = 50
 @export var damping: float = 20
 
-@export var max_distance: float = 1.0:
+@export var max_negative_distance: float = -1.0:
 	set(value):
-		max_distance = value
-		if get_node_or_null("LinearJoint"):
-			_joint.set("linear_limit_x/lower_distance", -max_distance)
-@export var min_distance: float = -1.0:
+		if value <= 0:
+			max_negative_distance = value
+			if get_node_or_null("LinearJoint"):
+				_joint.set("linear_limit_x/lower_distance", max_negative_distance)
+@export var max_positive_distance: float = 1.0:
 	set(value):
-		min_distance = value
-		if get_node_or_null("LinearJoint"):
-			_joint.set("linear_limit_x/upper_distance", -min_distance)
+		if value >= 0:
+			max_positive_distance = value
+			if get_node_or_null("LinearJoint"):
+				_joint.set("linear_limit_x/upper_distance", max_positive_distance)
 			
 @export_group("Controller parameters")
 @export var controllers: Array[Controller]
@@ -45,8 +47,8 @@ var _step: float
 func _enter_tree() -> void:
 	_joint = Generic6DOFJoint3D.new()
 	_joint.name = "LinearJoint"
-	_joint.set("linear_limit_x/lower_distance", -max_distance)
-	_joint.set("linear_limit_x/upper_distance", -min_distance)
+	_joint.set("linear_limit_x/lower_distance", max_negative_distance)
+	_joint.set("linear_limit_x/upper_distance", max_positive_distance)
 	_joint.node_a = ^"../.."
 	_joint.node_b = ^"../"
 	add_child(_joint)
