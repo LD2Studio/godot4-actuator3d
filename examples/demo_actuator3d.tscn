@@ -71,31 +71,36 @@ surface_material_override/0 = SubResource("StandardMaterial3D_itohb")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="MotorDevice"]
 shape = SubResource("BoxShape3D_17b1o")
 
-[node name="RotationActuator3D" type="RigidBody3D" parent="MotorDevice"]
+[node name="MotorActuator3D" type="RigidBody3D" parent="MotorDevice"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.8)
 can_sleep = false
 script = ExtResource("1_p60lm")
-torque_constant = 50.0
+actuator_type = "SERVO"
 helper_size = 0.5
+angle = 0.0
+torque_constant = 100.0
+servo_damping = 5.0
+angle_profile = 1.0
+profile_duration = 1.0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="MotorDevice/RotationActuator3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MotorDevice/MotorActuator3D"]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
 shape = SubResource("CylinderShape3D_2xgo3")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="MotorDevice/RotationActuator3D"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="MotorDevice/MotorActuator3D"]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
 mesh = SubResource("CylinderMesh_qs4wj")
 surface_material_override/0 = SubResource("StandardMaterial3D_0rc68")
 
-[node name="CollisionShape3D2" type="CollisionShape3D" parent="MotorDevice/RotationActuator3D"]
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="MotorDevice/MotorActuator3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.727299, 0)
 shape = SubResource("BoxShape3D_gwjsj")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="MotorDevice/RotationActuator3D/CollisionShape3D2"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="MotorDevice/MotorActuator3D/CollisionShape3D2"]
 mesh = SubResource("BoxMesh_0poe1")
 surface_material_override/0 = SubResource("StandardMaterial3D_p627l")
 
-[node name="Shaft" type="MeshInstance3D" parent="MotorDevice/RotationActuator3D"]
+[node name="Shaft" type="MeshInstance3D" parent="MotorDevice/MotorActuator3D"]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
 mesh = SubResource("CylinderMesh_utse4")
 
@@ -115,32 +120,36 @@ mesh = SubResource("BoxMesh_atqtq")
 skeleton = NodePath("../../MotorDevice")
 surface_material_override/0 = SubResource("StandardMaterial3D_itohb")
 
-[node name="RotationActuator3D" type="RigidBody3D" parent="ServoDevice"]
+[node name="ServoActuator3D" type="RigidBody3D" parent="ServoDevice"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.8)
 can_sleep = false
 script = ExtResource("1_p60lm")
 actuator_type = "SERVO"
-torque_constant = 100.0
 helper_size = 0.5
+angle = -87.019
+torque_constant = 100.0
+servo_damping = 5.0
+angle_profile = 1.0
+profile_duration = 1.0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="ServoDevice/RotationActuator3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ServoDevice/ServoActuator3D"]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
 shape = SubResource("CylinderShape3D_2xgo3")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="ServoDevice/RotationActuator3D"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ServoDevice/ServoActuator3D"]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
 mesh = SubResource("CylinderMesh_qs4wj")
 surface_material_override/0 = SubResource("StandardMaterial3D_0rc68")
 
-[node name="CollisionShape3D2" type="CollisionShape3D" parent="ServoDevice/RotationActuator3D"]
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="ServoDevice/ServoActuator3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.727299, 0)
 shape = SubResource("BoxShape3D_gwjsj")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="ServoDevice/RotationActuator3D/CollisionShape3D2"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ServoDevice/ServoActuator3D/CollisionShape3D2"]
 mesh = SubResource("BoxMesh_0poe1")
 surface_material_override/0 = SubResource("StandardMaterial3D_p627l")
 
-[node name="Shaft" type="MeshInstance3D" parent="ServoDevice/RotationActuator3D"]
+[node name="Shaft" type="MeshInstance3D" parent="ServoDevice/ServoActuator3D"]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
 mesh = SubResource("CylinderMesh_utse4")
 

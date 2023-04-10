@@ -7,14 +7,14 @@ extends RigidBody3D
 @export_enum("MOTOR", "SERVO") var actuator_type = "MOTOR":
 	set(value):
 		actuator_type = value
+		notify_property_list_changed()
 
 @export var exclude_nodes_from_collision: bool = false
 
-@export_group("Motor parameters")
 ## Angular velocity along Z axis in rad/sec
-@export var desired_velocity: float = 0.0
+var desired_velocity: float = 0.0
 ## Constant of the motor torque ; too high a value can make the motor's behavior unstable
-@export var torque_constant: float = 1.0:
+var torque_constant: float = 1.0:
 	set(value):
 		torque_constant = value
 		if _inertia_shaft == 0:
@@ -25,24 +25,113 @@ extends RigidBody3D
 			
 #@export var motor_damping: float = 0.1 # Frottement visqueux
 
-@export_group("Servo parameters")
 ## Desired angle value in °
-@export_range(-180, 180) var angle: float = 0:
+var angle: float = 0:
 	set(value):
 		if angle != value:
-			angle = value
+#			angle = value
+			angle = clamp(value, -180, 180)
 			_in_angle = rad_to_deg(current_angle)
 			_out_angle = angle
 			_step_count = int(profile_duration * Engine.physics_ticks_per_second)
 			_step = 0
 #			print("in_angle: %f , out_angle: %f , step_count: %d" %[_in_angle, _out_angle, _step_count])
 
-@export var servo_damping: float = 5.0
-@export_exp_easing var angle_profile: float = 1.0
-@export_range(0.1, 2, 0.1) var profile_duration: float = 1.0
+var servo_damping: float = 5.0
+var angle_profile: float = 1.0
+var profile_duration: float = 1.0
 
 @export_group("Controller parameters")
 @export var controllers: Array[Controller]
+
+			
+func _get_property_list():
+	var props = []
+	match actuator_type:
+		"MOTOR":
+			props.append({
+				"name": "Motor parameters",
+				"type": TYPE_STRING,
+				"usage": PROPERTY_USAGE_GROUP,
+			})
+			props.append({
+				"name": "desired_velocity",
+				"type": TYPE_FLOAT,
+				"usage": PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_EDITOR,
+			})
+			props.append({
+				"name": "angle",
+				"type": TYPE_FLOAT,
+				"usage": PROPERTY_USAGE_NONE,
+			})
+			props.append({
+				"name": "torque_constant",
+				"type": TYPE_FLOAT,
+				"usage": PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_EDITOR,
+			})
+			props.append({
+				"name": "servo_damping",
+				"type": TYPE_FLOAT,
+				"usage": PROPERTY_USAGE_STORAGE,
+			})
+			props.append({
+				"name": "angle_profile",
+				"type": TYPE_FLOAT,
+				"usage": PROPERTY_USAGE_STORAGE,
+			})
+			props.append({
+				"name": "profile_duration",
+				"type": TYPE_FLOAT,
+				"usage": PROPERTY_USAGE_STORAGE,
+			})
+		"SERVO":
+			props.append({
+				"name": "Servo parameters",
+				"type": TYPE_STRING,
+				"usage": PROPERTY_USAGE_GROUP,
+			})
+			props.append({
+				"name": "desired_velocity",
+				"type": TYPE_FLOAT,
+				"usage": PROPERTY_USAGE_NONE,
+			})
+			props.append({
+				"name": "angle",
+				"type": TYPE_FLOAT,
+				"usage": PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_EDITOR,
+				"hint": PROPERTY_HINT_RANGE,
+				"hint_string": "-180,180",
+			})
+			props.append({
+				"name": "torque_constant",
+				"type": TYPE_FLOAT,
+				"usage": PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_EDITOR,
+			})
+			props.append({
+				"name": "servo_damping",
+				"type": TYPE_FLOAT,
+				"usage": PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_EDITOR,
+			})
+			props.append({
+				"name": "Input Profile",
+				"type": TYPE_STRING,
+				"usage": PROPERTY_USAGE_GROUP,
+			})
+			props.append({
+				"name": "angle_profile",
+				"type": TYPE_FLOAT,
+				"usage": PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_EDITOR,
+				"hint": PROPERTY_HINT_EXP_EASING
+			})
+			props.append({
+				"name": "profile_duration",
+				"type": TYPE_FLOAT,
+				"usage": PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_EDITOR,
+				"hint": PROPERTY_HINT_RANGE,
+				"hint_string": "0.2,2"
+			})
+	return props
+
 
 @export_group("Debug")
 @export var helper_size: float = 1.0:
@@ -50,7 +139,7 @@ extends RigidBody3D
 		helper_size = value
 		if is_instance_valid(_help_meshinstance):
 			_help_meshinstance.scale = Vector3.ONE * helper_size
-
+			
 ## Current angular velocity in MOTOR mode
 var current_velocity: float
 ## Current angle in SERVO mode
@@ -88,8 +177,10 @@ func _exit_tree() -> void:
 func _ready() -> void:
 	can_sleep = false
 	
+	
 	if Engine.is_editor_hint():
 		_draw_help()
+		
 
 
 func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
