@@ -1,8 +1,9 @@
-[gd_scene load_steps=21 format=3 uid="uid://bhvkbsiavwwlj"]
+[gd_scene load_steps=22 format=3 uid="uid://bhvkbsiavwwlj"]
 
-[ext_resource type="Script" path="res://addons/actuator3d/nodes/rotation_actuator.gd" id="1_p60lm"]
+[ext_resource type="Script" path="res://examples/MotorActuator3D.gd" id="1_cmpip"]
 [ext_resource type="Script" path="res://addons/control_camera3d/nodes/control_camera_3d.gd" id="2_1vhfc"]
-[ext_resource type="Script" path="res://addons/actuator3d/nodes/translation_actuator.gd" id="3_p1rk0"]
+[ext_resource type="Script" path="res://examples/ServoActuator3D.gd" id="2_gjce4"]
+[ext_resource type="Script" path="res://examples/TranslationActuator3D.gd" id="3_hk6hc"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_atqtq"]
 
@@ -74,10 +75,10 @@ shape = SubResource("BoxShape3D_17b1o")
 [node name="MotorActuator3D" type="RigidBody3D" parent="MotorDevice"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.8)
 can_sleep = false
-script = ExtResource("1_p60lm")
+script = ExtResource("1_cmpip")
 helper_size = 0.5
 desired_velocity = 4.0
-torque_constant = 50.0
+torque_constant = 10.0
 servo_damping = 5.0
 angle_profile = 1.0
 profile_duration = 1.0
@@ -122,10 +123,10 @@ surface_material_override/0 = SubResource("StandardMaterial3D_itohb")
 [node name="ServoActuator3D" type="RigidBody3D" parent="ServoDevice"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.8)
 can_sleep = false
-script = ExtResource("1_p60lm")
+script = ExtResource("2_gjce4")
 actuator_type = "SERVO"
 angle = -90.0
-torque_constant = 100.0
+torque_constant = 30.0
 servo_damping = 5.0
 angle_profile = 1.0
 profile_duration = 1.0
@@ -173,7 +174,8 @@ mesh = SubResource("QuadMesh_rofbh")
 
 [node name="TranslationActuator3D" type="RigidBody3D" parent="TranslationDevice"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, 0.8)
-script = ExtResource("3_p1rk0")
+can_sleep = false
+script = ExtResource("3_hk6hc")
 angle_profile = -2.0
 force_gain = 200.0
 max_positive_distance = 0.0

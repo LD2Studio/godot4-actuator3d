@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3]
+[gd_scene load_steps=24 format=3 uid="uid://ckbcby6vwb0w0"]
 
 [ext_resource type="Script" path="res://addons/actuator3d/nodes/rotation_actuator.gd" id="1_kdcv3"]
 [ext_resource type="Script" path="res://addons/actuator3d/controllers/pid_control.gd" id="2_bk7ma"]
@@ -97,9 +97,13 @@ mass = 10.0
 can_sleep = false
 script = ExtResource("1_kdcv3")
 actuator_type = "SERVO"
-torque_constant = 100.0
 controllers = Array[Resource("res://addons/actuator3d/controllers/controller.gd")]([SubResource("Resource_q7n13")])
 helper_size = 0.4
+angle = 0.0
+torque_constant = 100.0
+servo_damping = 5.0
+angle_profile = 1.0
+profile_duration = 1.0
 metadata/_edit_group_ = true
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Manipulator/MotorBase"]
@@ -119,11 +123,13 @@ can_sleep = false
 script = ExtResource("1_kdcv3")
 actuator_type = "SERVO"
 exclude_nodes_from_collision = true
+controllers = Array[Resource("res://addons/actuator3d/controllers/controller.gd")]([SubResource("Resource_yr8pf")])
+helper_size = 0.3
+angle = 0.0
 torque_constant = 200.0
 servo_damping = 20.0
 angle_profile = -1.66435
-controllers = Array[Resource("res://addons/actuator3d/controllers/controller.gd")]([SubResource("Resource_yr8pf")])
-helper_size = 0.3
+profile_duration = 1.0
 metadata/_edit_group_ = true
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Manipulator/MotorBase/Actuator1"]
@@ -150,11 +156,12 @@ can_sleep = false
 script = ExtResource("1_kdcv3")
 actuator_type = "SERVO"
 exclude_nodes_from_collision = true
+helper_size = 0.3
+angle = 0.0
 torque_constant = 100.0
 servo_damping = 20.0
 angle_profile = -4.92457
 profile_duration = 2.0
-helper_size = 0.3
 metadata/_edit_group_ = true
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Manipulator/MotorBase/Actuator1/Actuator2"]
@@ -181,8 +188,12 @@ can_sleep = false
 script = ExtResource("1_kdcv3")
 actuator_type = "SERVO"
 exclude_nodes_from_collision = true
-torque_constant = 100.0
 helper_size = 0.3
+angle = 0.0
+torque_constant = 100.0
+servo_damping = 5.0
+angle_profile = 1.0
+profile_duration = 1.0
 metadata/_edit_group_ = true
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Manipulator/MotorBase/Actuator1/Actuator2/Actuator3"]

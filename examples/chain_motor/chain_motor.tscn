@@ -61,10 +61,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.16081)
 can_sleep = false
 script = ExtResource("1_i3b34")
 actuator_type = "SERVO"
-torque_constant = 200.0
-angle = 90.0
-servo_damping = 10.0
 controllers = Array[Resource("res://addons/actuator3d/controllers/controller.gd")]([SubResource("Resource_4c6va")])
+angle = 90.0
+torque_constant = 200.0
+servo_damping = 10.0
+angle_profile = 1.0
+profile_duration = 1.0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBase/Motor1"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
@@ -84,8 +86,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, 1.074)
 can_sleep = false
 script = ExtResource("1_i3b34")
 actuator_type = "SERVO"
-torque_constant = 200.0
 angle = 90.0
+torque_constant = 200.0
+servo_damping = 5.0
+angle_profile = 1.0
+profile_duration = 1.0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBase/Motor1/Motor2"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
