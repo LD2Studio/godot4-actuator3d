@@ -9,12 +9,14 @@ extends RigidBody3D
 		actuator_type = value
 		notify_property_list_changed()
 
-@export var exclude_nodes_from_collision: bool = false
+@export var exclude_nodes_from_collision: bool = true
 
-@export_enum("X","Y","Z") var rotation_axis = "Z":
+@export_enum("X","-X","Y","-Y","Z","-Z") var rotation_axis = "Z":
 	set(value):
 		rotation_axis = value
-		_draw_help()
+		if Engine.is_editor_hint() or not only_debug:
+			_draw_help()
+		
 
 ## Angular velocity along Z axis in rad/sec
 var desired_velocity: float = 0.0
@@ -142,6 +144,7 @@ func _get_property_list():
 		helper_size = value
 		if is_instance_valid(_help_meshinstance):
 			_help_meshinstance.scale = Vector3.ONE * helper_size
+@export var only_debug: bool = true
 			
 ## Current angular velocity in MOTOR mode
 var current_velocity: float
@@ -175,25 +178,31 @@ func _enter_tree() -> void:
 	match rotation_axis:
 		"X":
 			_joint.rotation_degrees = Vector3(0, 90, 0)
+		"-X":
+			_joint.rotation_degrees = Vector3(0, -90, 0)
 		"Y":
 			_joint.rotation_degrees = Vector3(-90, 0, 0)
+		"-Y":
+			_joint.rotation_degrees = Vector3(90, 0, 0)
 		"Z":
 			pass
-			
+		"-Z":
+			_joint.rotation_degrees = Vector3(0, 0, 90)
 	_help_meshinstance.name = "HelpMeshInstance"
 	_help_meshinstance.mesh = _help_mesh
 	_help_meshinstance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	_help_mesh_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	add_child(_help_meshinstance)
+	can_sleep = false
+	
+	if Engine.is_editor_hint() or not only_debug:
+		_draw_help()
+
 	
 func _exit_tree() -> void:
 	remove_child(_joint)
 	remove_child(_help_meshinstance)
 
-func _ready() -> void:
-	can_sleep = false
-	if Engine.is_editor_hint():
-		_draw_help()
 
 func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 	_inertia_shaft = PhysicsServer3D.body_get_direct_state(get_node(".").get_rid()).inverse_inertia.inverse().z
@@ -202,10 +211,16 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 			match rotation_axis:
 				"X":
 					current_velocity = (global_transform.inverse().basis * angular_velocity).x
+				"-X":
+					current_velocity = -(global_transform.inverse().basis * angular_velocity).x
 				"Y":
 					current_velocity = (global_transform.inverse().basis * angular_velocity).y
+				"-Y":
+					current_velocity = -(global_transform.inverse().basis * angular_velocity).y
 				"Z":
 					current_velocity = (global_transform.inverse().basis * angular_velocity).z
+				"-Z":
+					current_velocity = -(global_transform.inverse().basis * angular_velocity).z
 			var err = desired_velocity - current_velocity
 			var u: float
 			if controllers.is_empty():
@@ -218,10 +233,16 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 			match rotation_axis:
 				"X":
 					apply_torque(global_transform.basis.x * (torque_cmd))
+				"-X":
+					apply_torque(global_transform.basis.x * (-torque_cmd))
 				"Y":
 					apply_torque(global_transform.basis.y * (torque_cmd))
+				"-Y":
+					apply_torque(global_transform.basis.y * (-torque_cmd))
 				"Z":
 					apply_torque(global_transform.basis.z * (torque_cmd))
+				"-Z":
+					apply_torque(global_transform.basis.z * (-torque_cmd))
 			
 		"SERVO":
 			var basis_not_tranformed = _pose_basis_inv * transform.basis
@@ -229,12 +250,21 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 				"X":
 					current_angle = basis_not_tranformed.get_euler().x
 					current_velocity = (global_transform.inverse().basis * angular_velocity).x
+				"-X":
+					current_angle = -basis_not_tranformed.get_euler().x
+					current_velocity = -(global_transform.inverse().basis * angular_velocity).x
 				"Y":
 					current_angle = basis_not_tranformed.get_euler().y
 					current_velocity = (global_transform.inverse().basis * angular_velocity).y
+				"-Y":
+					current_angle = -basis_not_tranformed.get_euler().y
+					current_velocity = -(global_transform.inverse().basis * angular_velocity).y
 				"Z":
 					current_angle = basis_not_tranformed.get_euler().z
 					current_velocity = (global_transform.inverse().basis * angular_velocity).z
+				"-Z":
+					current_angle = -basis_not_tranformed.get_euler().z
+					current_velocity = -(global_transform.inverse().basis * angular_velocity).z
 			var i: float = _step / _step_count # Value between 0 and 1
 			var ease_angle: float
 			if i < 1:
@@ -255,10 +285,16 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 			match rotation_axis:
 				"X":
 					apply_torque(global_transform.basis.x * (torque_cmd))
+				"-X":
+					apply_torque(global_transform.basis.x * (-torque_cmd))
 				"Y":
 					apply_torque(global_transform.basis.y * (torque_cmd))
+				"-Y":
+					apply_torque(global_transform.basis.y * (-torque_cmd))
 				"Z":
 					apply_torque(global_transform.basis.z * (torque_cmd))
+				"-Z":
+					apply_torque(global_transform.basis.z * (-torque_cmd))
 			
 func _draw_help():
 	var edges = 24
