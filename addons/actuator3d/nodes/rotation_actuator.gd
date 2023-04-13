@@ -332,3 +332,9 @@ func _draw_help():
 			_help_meshinstance.rotation_degrees = Vector3(-90,0,0)
 		"Z":
 			_help_meshinstance.rotation_degrees = Vector3(0,0,0)
+		"-X":
+			_help_meshinstance.rotation_degrees = Vector3(0,-90,0)
+		"-Y":
+			_help_meshinstance.rotation_degrees = Vector3(90,0,0)
+		"-Z":
+			_help_meshinstance.rotation_degrees = Vector3(0,180,0)
