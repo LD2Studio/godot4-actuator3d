@@ -167,8 +167,6 @@ func _enter_tree() -> void:
 			_joint.set("angular_limit_z/enabled", true)
 			_joint.set("angular_limit_z/upper_angle", -deg_to_rad(min_angle))
 			_joint.set("angular_limit_z/lower_angle", -deg_to_rad(max_angle))
-	
-	print(_joint.get("angular_limit_z/upper_angle"))
 	_joint.node_a = ^"../.."
 	_joint.node_b = ^"../"
 	_joint.exclude_nodes_from_collision = exclude_nodes_from_collision
