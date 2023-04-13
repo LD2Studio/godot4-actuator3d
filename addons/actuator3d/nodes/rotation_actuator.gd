@@ -31,17 +31,17 @@ var torque_constant: float = 1.0:
 #@export var motor_damping: float = 0.1 # Frottement visqueux
 
 ## Desired angle value in °
-var angle: float = 0:
+var desired_angle: float = 0:
 	set(value):
-		if angle != value:
-#			angle = value
-			angle = clamp(value, -180, 180)
+		if desired_angle != value:
+			desired_angle = clamp(value, -180, 180)
 			_in_angle = rad_to_deg(current_angle)
-			_out_angle = angle
+			_out_angle = desired_angle
 			_step_count = int(profile_duration * Engine.physics_ticks_per_second)
 			_step = 0
 #			print("in_angle: %f , out_angle: %f , step_count: %d" %[_in_angle, _out_angle, _step_count])
-
+var max_angle: float = 90
+var min_angle: float = -90
 var servo_damping: float = 5.0
 var angle_profile: float = 1.0
 var profile_duration: float = 1.0
@@ -49,7 +49,6 @@ var profile_duration: float = 1.0
 @export_group("Controller parameters")
 @export var controllers: Array[Controller]
 
-			
 func _get_property_list():
 	var props = []
 	match actuator_type:
@@ -65,19 +64,9 @@ func _get_property_list():
 				"usage": PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_EDITOR,
 			})
 			props.append({
-				"name": "angle",
-				"type": TYPE_FLOAT,
-				"usage": PROPERTY_USAGE_NONE,
-			})
-			props.append({
 				"name": "torque_constant",
 				"type": TYPE_FLOAT,
 				"usage": PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_EDITOR,
-			})
-			props.append({
-				"name": "servo_damping",
-				"type": TYPE_FLOAT,
-				"usage": PROPERTY_USAGE_STORAGE,
 			})
 			props.append({
 				"name": "angle_profile",
@@ -96,16 +85,25 @@ func _get_property_list():
 				"usage": PROPERTY_USAGE_GROUP,
 			})
 			props.append({
-				"name": "desired_velocity",
-				"type": TYPE_FLOAT,
-				"usage": PROPERTY_USAGE_NONE,
-			})
-			props.append({
-				"name": "angle",
+				"name": "desired_angle",
 				"type": TYPE_FLOAT,
 				"usage": PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_EDITOR,
 				"hint": PROPERTY_HINT_RANGE,
-				"hint_string": "-180,180",
+				"hint_string": "-170,170",
+			})
+			props.append({
+				"name": "max_angle",
+				"type": TYPE_FLOAT,
+				"usage": PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_EDITOR,
+				"hint": PROPERTY_HINT_RANGE,
+				"hint_string": "0,170",
+			})
+			props.append({
+				"name": "min_angle",
+				"type": TYPE_FLOAT,
+				"usage": PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_EDITOR,
+				"hint": PROPERTY_HINT_RANGE,
+				"hint_string": "-170,0",
 			})
 			props.append({
 				"name": "torque_constant",
@@ -137,7 +135,6 @@ func _get_property_list():
 			})
 	return props
 
-
 @export_group("Debug")
 @export var helper_size: float = 1.0:
 	set(value):
@@ -163,18 +160,27 @@ var _inertia_shaft: float
 
 func _enter_tree() -> void:
 	_joint.name = "HingeJoint"
-	match rotation_axis:
-		"X":
-			_joint.set("angular_limit_x/enabled", false)
-		"Y":
-			_joint.set("angular_limit_y/enabled", false)
-		"Z":
+	match actuator_type:
+		"MOTOR":
 			_joint.set("angular_limit_z/enabled", false)
+		"SERVO":
+			_joint.set("angular_limit_z/enabled", true)
+			_joint.set("angular_limit_z/upper_angle", -deg_to_rad(min_angle))
+			_joint.set("angular_limit_z/lower_angle", -deg_to_rad(max_angle))
+	
+	print(_joint.get("angular_limit_z/upper_angle"))
 	_joint.node_a = ^"../.."
 	_joint.node_b = ^"../"
 	_joint.exclude_nodes_from_collision = exclude_nodes_from_collision
 	add_child(_joint)
-	
+	match rotation_axis:
+		"X":
+			_joint.rotation_degrees = Vector3(0, 90, 0)
+		"Y":
+			_joint.rotation_degrees = Vector3(-90, 0, 0)
+		"Z":
+			pass
+			
 	_help_meshinstance.name = "HelpMeshInstance"
 	_help_meshinstance.mesh = _help_mesh
 	_help_meshinstance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
@@ -201,7 +207,6 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 					current_velocity = (global_transform.inverse().basis * angular_velocity).y
 				"Z":
 					current_velocity = (global_transform.inverse().basis * angular_velocity).z
-			
 			var err = desired_velocity - current_velocity
 			var u: float
 			if controllers.is_empty():
@@ -231,15 +236,11 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 				"Z":
 					current_angle = basis_not_tranformed.get_euler().z
 					current_velocity = (global_transform.inverse().basis * angular_velocity).z
-#			current_angle = basis_not_tranformed.get_euler().z
-#			current_velocity = (global_transform.inverse().basis * angular_velocity).z
 			var i: float = _step / _step_count # Value between 0 and 1
 			var ease_angle: float
 			if i < 1:
-#				print("i: ", i)
 				_step += 1
 				ease_angle = _in_angle + (_out_angle - _in_angle) * ease(i, angle_profile)
-#				print("ease angle: ", ease_angle)
 			else:
 				ease_angle = _out_angle
 			var err = deg_to_rad(ease_angle) - current_angle
@@ -251,9 +252,7 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 				for controller in controllers:
 					x = controller.process(x)
 			var torque_cmd = torque_constant * x - servo_damping * current_velocity
-#			var torque_cmd = servo_gain * x - servo_damping * current_velocity
 #			print("angle: %f , vel: %f , err: %f , cmd: %f" %[rad_to_deg(current_angle), current_velocity, err, torque_cmd])
-#			apply_torque(global_transform.basis.z * (torque_cmd))
 			match rotation_axis:
 				"X":
 					apply_torque(global_transform.basis.x * (torque_cmd))
