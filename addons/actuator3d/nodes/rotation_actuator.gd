@@ -40,8 +40,14 @@ var desired_angle: float = 0:
 			_step_count = int(profile_duration * Engine.physics_ticks_per_second)
 			_step = 0
 #			print("in_angle: %f , out_angle: %f , step_count: %d" %[_in_angle, _out_angle, _step_count])
-var max_angle: float = 90
-var min_angle: float = -90
+var max_angle: float = 90:
+	set(value):
+		if value > min_angle:
+			max_angle = value
+var min_angle: float = -90:
+	set(value):
+		if value < max_angle:
+			min_angle = value
 var servo_damping: float = 5.0
 var angle_profile: float = 1.0
 var profile_duration: float = 1.0
@@ -96,14 +102,14 @@ func _get_property_list():
 				"type": TYPE_FLOAT,
 				"usage": PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_EDITOR,
 				"hint": PROPERTY_HINT_RANGE,
-				"hint_string": "0,170",
+				"hint_string": "-170,170",
 			})
 			props.append({
 				"name": "min_angle",
 				"type": TYPE_FLOAT,
 				"usage": PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_EDITOR,
 				"hint": PROPERTY_HINT_RANGE,
-				"hint_string": "-170,0",
+				"hint_string": "-170,170",
 			})
 			props.append({
 				"name": "torque_constant",
