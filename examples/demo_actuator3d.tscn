@@ -22,7 +22,8 @@ bottom_radius = 0.3
 height = 0.3
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0rc68"]
-albedo_color = Color(0.0235294, 0.94902, 0.207843, 1)
+transparency = 1
+albedo_color = Color(0.0235294, 0.94902, 0.207843, 0.329412)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_gwjsj"]
 size = Vector3(0.3, 1, 0.3)
@@ -77,8 +78,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.8)
 can_sleep = false
 script = ExtResource("1_cmpip")
 helper_size = 0.5
-desired_velocity = -2.0
-torque_constant = 200.0
+rotation_speed = 0.0
+torque_constant = 1.0
 angle_profile = 1.0
 profile_duration = 1.0
 
@@ -120,16 +121,15 @@ skeleton = NodePath("../../MotorDevice")
 surface_material_override/0 = SubResource("StandardMaterial3D_itohb")
 
 [node name="ServoActuator3D" type="RigidBody3D" parent="ServoDevice"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.8)
+transform = Transform3D(-4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0.8)
 can_sleep = false
 script = ExtResource("2_gjce4")
 actuator_type = "SERVO"
-rotation_axis = "-Z"
-helper_size = 0.5
-desired_angle = 163.605
-max_angle = 0.0
+only_debug = false
+desired_angle = 90.0
+max_angle = 45.0
 min_angle = -90.0
-torque_constant = 20.0
+torque_constant = 10.0
 servo_damping = 5.0
 angle_profile = 1.0
 profile_duration = 1.0
@@ -138,13 +138,13 @@ profile_duration = 1.0
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
 shape = SubResource("CylinderShape3D_2xgo3")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="ServoDevice/ServoActuator3D"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ServoDevice/ServoActuator3D/CollisionShape3D"]
 mesh = SubResource("CylinderMesh_qs4wj")
+skeleton = NodePath("../..")
 surface_material_override/0 = SubResource("StandardMaterial3D_0rc68")
 
 [node name="CollisionShape3D2" type="CollisionShape3D" parent="ServoDevice/ServoActuator3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.727299, 0)
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0.7, 0, 0)
 shape = SubResource("BoxShape3D_gwjsj")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ServoDevice/ServoActuator3D/CollisionShape3D2"]
