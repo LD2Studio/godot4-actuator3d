@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://bhvkbsiavwwlj"]
+[gd_scene load_steps=24 format=3 uid="uid://bhvkbsiavwwlj"]
 
 [ext_resource type="Script" path="res://examples/MotorActuator3D.gd" id="1_cmpip"]
 [ext_resource type="Script" path="res://addons/control_camera3d/nodes/control_camera_3d.gd" id="2_1vhfc"]
@@ -25,11 +25,11 @@ height = 0.3
 transparency = 1
 albedo_color = Color(0.0235294, 0.94902, 0.207843, 0.329412)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_gwjsj"]
-size = Vector3(0.3, 1, 0.3)
+[sub_resource type="BoxShape3D" id="BoxShape3D_lf672"]
+size = Vector3(0.3, 2.99464, 0.3)
 
-[sub_resource type="BoxMesh" id="BoxMesh_0poe1"]
-size = Vector3(0.3, 1, 0.3)
+[sub_resource type="BoxMesh" id="BoxMesh_rtso5"]
+size = Vector3(0.3, 2.958, 0.3)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_p627l"]
 albedo_color = Color(0.0235294, 0.94902, 0.207843, 1)
@@ -38,6 +38,12 @@ albedo_color = Color(0.0235294, 0.94902, 0.207843, 1)
 top_radius = 0.1
 bottom_radius = 0.1
 height = 0.6
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_gwjsj"]
+size = Vector3(0.3, 1, 0.3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_0poe1"]
+size = Vector3(0.3, 1, 0.3)
 
 [sub_resource type="BoxMesh" id="BoxMesh_p50kp"]
 size = Vector3(1.5, 1, 1)
@@ -62,8 +68,59 @@ size = Vector3(0.232, 0.138, 0.6)
 
 [node name="Demo Actuator3D" type="Node3D"]
 
+[node name="HingeDevice" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.18105, 0, 0)
+metadata/_edit_group_ = true
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="HingeDevice"]
+mesh = SubResource("BoxMesh_atqtq")
+surface_material_override/0 = SubResource("StandardMaterial3D_itohb")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="HingeDevice"]
+shape = SubResource("BoxShape3D_17b1o")
+
+[node name="FreeActuator3D" type="RigidBody3D" parent="HingeDevice"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.8)
+can_sleep = false
+script = ExtResource("1_cmpip")
+actuator_type = "FREE"
+rotation_speed = 0.0
+target_angle = 0.0
+angle_profile = 1.0
+profile_duration = 1.0
+max_angle = 180.0
+min_angle = -180.0
+velocity_damping = 5.0
+velocity_constant = 5.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="HingeDevice/FreeActuator3D"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
+shape = SubResource("CylinderShape3D_2xgo3")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="HingeDevice/FreeActuator3D"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
+mesh = SubResource("CylinderMesh_qs4wj")
+surface_material_override/0 = SubResource("StandardMaterial3D_0rc68")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="HingeDevice/FreeActuator3D"]
+transform = Transform3D(0.131824, 0.991273, 0, -0.991273, 0.131824, 0, 0, 0, 1, -0.784719, -0.102773, 0)
+shape = SubResource("BoxShape3D_lf672")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="HingeDevice/FreeActuator3D/CollisionShape3D2"]
+mesh = SubResource("BoxMesh_rtso5")
+surface_material_override/0 = SubResource("StandardMaterial3D_p627l")
+
+[node name="Shaft" type="MeshInstance3D" parent="HingeDevice/FreeActuator3D"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
+mesh = SubResource("CylinderMesh_utse4")
+
+[node name="Label3D" type="Label3D" parent="HingeDevice"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.73847, 0.397978)
+text = "RotationActuator3D
+Mode FREE"
+
 [node name="MotorDevice" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.21419, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.51419, 0, 0)
 metadata/_edit_group_ = true
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="MotorDevice"]
@@ -78,10 +135,15 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.8)
 can_sleep = false
 script = ExtResource("1_cmpip")
 helper_size = 0.5
-rotation_speed = 0.0
-torque_constant = 1.0
+rotation_speed = -3.0
+torque_constant = 20.0
+target_angle = 0.0
 angle_profile = 1.0
 profile_duration = 1.0
+max_angle = 180.0
+min_angle = -180.0
+velocity_damping = 5.0
+velocity_constant = 5.0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="MotorDevice/MotorActuator3D"]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
@@ -110,6 +172,7 @@ text = "RotationActuator3D
 Mode MOTOR"
 
 [node name="ServoDevice" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7, 0, 0)
 metadata/_edit_group_ = true
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ServoDevice"]
@@ -122,17 +185,20 @@ surface_material_override/0 = SubResource("StandardMaterial3D_itohb")
 
 [node name="ServoActuator3D" type="RigidBody3D" parent="ServoDevice"]
 transform = Transform3D(-4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0.8)
+mass = 10.0
 can_sleep = false
 script = ExtResource("2_gjce4")
 actuator_type = "SERVO"
 only_debug = false
-desired_angle = 90.0
-max_angle = 45.0
-min_angle = -90.0
-torque_constant = 10.0
-servo_damping = 5.0
-angle_profile = 1.0
+target_angle = 90.0
+max_angle = 150.0
+min_angle = -150.0
+torque_constant = 30.0
+velocity_damping = 5.0
+velocity_constant = 5.0
+angle_profile = -2.0
 profile_duration = 1.0
+rotation_speed = 3.0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ServoDevice/ServoActuator3D"]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
@@ -161,7 +227,7 @@ text = "RotationActuator3D
 Mode SERVO"
 
 [node name="TranslationDevice" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.64095, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.34095, 0, 0)
 metadata/_edit_group_ = true
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="TranslationDevice"]
@@ -200,7 +266,14 @@ text = "TranslationActuator3D"
 
 [node name="ControlCamera3D" type="Camera3D" parent="."]
 transform = Transform3D(0.999942, -0.00157798, 0.0106575, 0, 0.989216, 0.146467, -0.0107737, -0.146458, 0.989158, 0.0638838, 0.877961, 5.92928)
+current = true
 fov = 44.4
 script = ExtResource("2_1vhfc")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7, 0, 0)
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4.20009)
+projection = 1
+size = 5.0

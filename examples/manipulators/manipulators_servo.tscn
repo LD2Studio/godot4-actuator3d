@@ -1,0 +1,190 @@
+[gd_scene load_steps=14 format=3 uid="uid://wq3su1pmgud2"]
+
+[ext_resource type="Script" path="res://addons/control_camera3d/nodes/control_camera_3d.gd" id="1_5hhyv"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_plsba"]
+sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+
+[sub_resource type="Sky" id="Sky_q773l"]
+sky_material = SubResource("ProceduralSkyMaterial_plsba")
+
+[sub_resource type="Environment" id="Environment_x2ljq"]
+background_mode = 2
+sky = SubResource("Sky_q773l")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_haedv"]
+albedo_color = Color(0.835294, 0.254902, 0.0705882, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_nb65t"]
+material = SubResource("StandardMaterial3D_haedv")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_21vdi"]
+
+[sub_resource type="GDScript" id="GDScript_0gtft"]
+resource_name = "arm1_joint"
+script/source = "@tool
+extends RotationActuator3D
+"
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_4wuc6"]
+top_radius = 0.2
+bottom_radius = 0.2
+height = 1.0
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_epdh0"]
+top_radius = 0.2
+bottom_radius = 0.2
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_33itl"]
+points = PackedVector3Array(-0.2, -0.5, 0, -0.19906, -0.5, -0.0196163, -0.19906, -0.5, 0.0195771, -0.2, 0.5, 0, -0.196163, -0.5, -0.0390368, -0.19906, 0.5, -0.0196163, -0.196163, -0.5, 0.0389977, -0.19906, 0.5, 0.0195771, -0.191425, -0.5, -0.0580658, -0.196163, 0.5, -0.0390368, -0.191425, -0.5, 0.0580266, -0.196163, 0.5, 0.0389977, -0.184808, -0.5, -0.0765466, -0.191425, 0.5, -0.0580658, -0.184808, -0.5, 0.0765074, -0.191425, 0.5, 0.0580266, -0.17639, -0.5, -0.0942835, -0.184808, 0.5, -0.0765466, -0.17639, -0.5, 0.0942443, -0.184808, 0.5, 0.0765074, -0.166327, -0.5, -0.11112, -0.17639, 0.5, -0.0942835, -0.166327, -0.5, 0.111081, -0.17639, 0.5, 0.0942443, -0.15462, -0.5, -0.126899, -0.166327, 0.5, -0.11112, -0.15462, -0.5, 0.12686, -0.166327, 0.5, 0.111081, -0.141425, -0.5, -0.141425, -0.15462, 0.5, -0.126899, -0.141425, -0.5, 0.141386, -0.15462, 0.5, 0.12686, -0.126899, -0.5, -0.15462, -0.141425, 0.5, -0.141425, -0.126899, -0.5, 0.154581, -0.141425, 0.5, 0.141386, -0.11112, -0.5, -0.166327, -0.126899, 0.5, -0.15462, -0.11112, -0.5, 0.166288, -0.126899, 0.5, 0.154581, -0.0942835, -0.5, -0.17639, -0.11112, 0.5, -0.166327, -0.0942835, -0.5, 0.176351, -0.11112, 0.5, 0.166288, -0.0765466, -0.5, -0.184808, -0.0942835, 0.5, -0.17639, -0.0765466, -0.5, 0.184769, -0.0942835, 0.5, 0.176351, -0.0580658, -0.5, -0.191425, -0.0765466, 0.5, -0.184808, -0.0580658, -0.5, 0.191386, -0.0765466, 0.5, 0.184769, -0.0390368, -0.5, -0.196163, -0.0580658, 0.5, -0.191425, -0.0390368, -0.5, 0.196124, -0.0580658, 0.5, 0.191386, -0.0196163, -0.5, -0.19906, -0.0390368, 0.5, -0.196163, -0.0196163, -0.5, 0.199021, -0.0390368, 0.5, 0.196124, 0, -0.5, -0.2, -0.0196163, 0.5, -0.19906, 0, -0.5, 0.2, -0.0196163, 0.5, 0.199021, 0.0195771, -0.5, -0.19906, 0, 0.5, -0.2, 0.0195771, -0.5, 0.199021, 0, 0.5, 0.2, 0.0389977, -0.5, -0.196163, 0.0195771, 0.5, -0.19906, 0.0389977, -0.5, 0.196124, 0.0195771, 0.5, 0.199021, 0.0580266, -0.5, -0.191425, 0.0389977, 0.5, -0.196163, 0.0580266, -0.5, 0.191386, 0.0389977, 0.5, 0.196124, 0.0765074, -0.5, -0.184808, 0.0580266, 0.5, -0.191425, 0.0765074, -0.5, 0.184769, 0.0580266, 0.5, 0.191386, 0.0942443, -0.5, -0.17639, 0.0765074, 0.5, -0.184808, 0.0942443, -0.5, 0.176351, 0.0765074, 0.5, 0.184769, 0.111081, -0.5, -0.166327, 0.0942443, 0.5, -0.17639, 0.111081, -0.5, 0.166288, 0.0942443, 0.5, 0.176351, 0.12686, -0.5, -0.15462, 0.111081, 0.5, -0.166327, 0.12686, -0.5, 0.154581, 0.111081, 0.5, 0.166288, 0.141386, -0.5, -0.141425, 0.12686, 0.5, -0.15462, 0.141386, -0.5, 0.141386, 0.12686, 0.5, 0.154581, 0.154581, -0.5, -0.126899, 0.141386, 0.5, -0.141425, 0.154581, -0.5, 0.12686, 0.141386, 0.5, 0.141386, 0.166288, -0.5, -0.11112, 0.154581, 0.5, -0.126899, 0.166288, -0.5, 0.111081, 0.154581, 0.5, 0.12686, 0.176351, -0.5, -0.0942835, 0.166288, 0.5, -0.11112, 0.176351, -0.5, 0.0942443, 0.166288, 0.5, 0.111081, 0.184769, -0.5, -0.0765466, 0.176351, 0.5, -0.0942835, 0.184769, -0.5, 0.0765074, 0.176351, 0.5, 0.0942443, 0.191386, -0.5, -0.0580658, 0.184769, 0.5, -0.0765466, 0.191386, -0.5, 0.0580266, 0.184769, 0.5, 0.0765074, 0.196124, -0.5, -0.0390368, 0.191386, 0.5, -0.0580658, 0.196124, -0.5, 0.0389977, 0.191386, 0.5, 0.0580266, 0.199021, -0.5, -0.0196163, 0.196124, 0.5, -0.0390368, 0.199021, -0.5, 0.0195771, 0.196124, 0.5, 0.0389977, 0.2, -0.5, 0, 0.199021, 0.5, -0.0196163, 0.199021, 0.5, 0.0195771, 0.2, 0.5, 0)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_376hv"]
+points = PackedVector3Array(0.228528, 1.01587, 0.038058, -0.21583, -1.01587, -0.088864, -0.21583, -1.01587, 0.101562, -0.21583, 1.01587, -0.088864, 0.101562, -1.01587, -0.21583, 0.038058, -1.01587, 0.228528, -0.0571118, 1.01587, 0.228528, -0.088864, 1.01587, -0.21583, 0.228528, -1.01587, 0.038058, 0.196776, 1.01587, -0.120573, 0.133271, 1.01587, 0.196776, -0.21583, 1.01587, 0.101562, -0.152325, -1.01587, -0.184077, 0.101562, 1.01587, -0.21583, 0.196776, -1.01587, 0.133271, 0.228528, -1.01587, -0.0571118, -0.120573, -1.01587, 0.196776, -0.088864, -1.01587, -0.21583, -0.184077, 1.01587, -0.152325, 0.133271, -1.01587, 0.196776, 0.196776, 1.01587, 0.133271, -0.0571118, -1.01587, 0.228528, 0.038058, 1.01587, 0.228528, 0.228528, 1.01587, -0.0571118, -0.120573, 1.01587, 0.196776, 0.196776, -1.01587, -0.120573, -0.184077, -1.01587, -0.152325, -0.152325, 1.01587, -0.184077)
+
+[sub_resource type="GDScript" id="GDScript_2gquo"]
+resource_name = "arm2_joint"
+script/source = "@tool
+extends RotationActuator3D
+"
+
+[node name="Manipulators Servo" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_x2ljq")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
+shadow_enabled = true
+
+[node name="ControlCamera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.996182, 0.0872955, 0, -0.0872955, 0.996182, 0, 1.78323, 5.71984)
+script = ExtResource("1_5hhyv")
+pivot_pos = Vector3(0, 1.282, 0)
+
+[node name="Manipulator_1_axis" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.3, 0.5, 0)
+freeze = true
+metadata/_edit_group_ = true
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Manipulator_1_axis"]
+mesh = SubResource("BoxMesh_nb65t")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Manipulator_1_axis"]
+shape = SubResource("BoxShape3D_21vdi")
+
+[node name="Arm1" type="RigidBody3D" parent="Manipulator_1_axis"]
+can_sleep = false
+script = SubResource("GDScript_0gtft")
+actuator_type = "SERVO"
+rotation_axis = "Y"
+target_angle = 50.0
+max_angle = 90.0
+min_angle = -90.0
+torque_constant = 50.0
+velocity_damping = 5.0
+velocity_constant = 5.0
+angle_profile = 1.0
+profile_duration = 1.0
+rotation_speed = 0.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Manipulator_1_axis/Arm1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("CylinderMesh_4wuc6")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Manipulator_1_axis/Arm1/MeshInstance3D"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0.8, 0.5, 0)
+mesh = SubResource("CylinderMesh_epdh0")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Manipulator_1_axis/Arm1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("ConvexPolygonShape3D_33itl")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="Manipulator_1_axis/Arm1"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0.8, 1.5, 0)
+shape = SubResource("ConvexPolygonShape3D_376hv")
+
+[node name="Manipulator_2_axis" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.7, 0.5, 0)
+freeze = true
+metadata/_edit_group_ = true
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Manipulator_2_axis"]
+mesh = SubResource("BoxMesh_nb65t")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Manipulator_2_axis"]
+shape = SubResource("BoxShape3D_21vdi")
+
+[node name="Arm1" type="RigidBody3D" parent="Manipulator_2_axis"]
+can_sleep = false
+script = SubResource("GDScript_0gtft")
+actuator_type = "SERVO"
+rotation_axis = "Y"
+target_angle = -50.0
+max_angle = 90.0
+min_angle = -90.0
+torque_constant = 50.0
+velocity_damping = 5.0
+velocity_constant = 5.0
+angle_profile = 1.0
+profile_duration = 1.0
+rotation_speed = 0.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Manipulator_2_axis/Arm1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("CylinderMesh_4wuc6")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Manipulator_2_axis/Arm1/MeshInstance3D"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0.8, 0.5, 0)
+mesh = SubResource("CylinderMesh_epdh0")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Manipulator_2_axis/Arm1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("ConvexPolygonShape3D_33itl")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="Manipulator_2_axis/Arm1"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0.8, 1.5, 0)
+shape = SubResource("ConvexPolygonShape3D_376hv")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="Manipulator_2_axis/Arm1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.3, 1.5, 0)
+mesh = SubResource("BoxMesh_nb65t")
+skeleton = NodePath("../..")
+
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="Manipulator_2_axis/Arm1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.3, 1.5, 0)
+shape = SubResource("BoxShape3D_21vdi")
+
+[node name="Arm2" type="RigidBody3D" parent="Manipulator_2_axis/Arm1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.3, 1.5, 0)
+can_sleep = false
+script = SubResource("GDScript_2gquo")
+actuator_type = "SERVO"
+target_angle = 50.0
+max_angle = 90.0
+min_angle = -90.0
+torque_constant = 30.0
+velocity_damping = 5.0
+velocity_constant = 5.0
+angle_profile = 1.0
+profile_duration = 1.0
+rotation_speed = 0.0
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="Manipulator_2_axis/Arm1/Arm2"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 1)
+mesh = SubResource("CylinderMesh_4wuc6")
+skeleton = NodePath("../..")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Manipulator_2_axis/Arm1/Arm2/MeshInstance3D3"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0.8, 0.5, 0)
+mesh = SubResource("CylinderMesh_epdh0")
+
+[node name="CollisionShape3D4" type="CollisionShape3D" parent="Manipulator_2_axis/Arm1/Arm2"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 1)
+shape = SubResource("ConvexPolygonShape3D_33itl")
+
+[node name="CollisionShape3D5" type="CollisionShape3D" parent="Manipulator_2_axis/Arm1/Arm2"]
+transform = Transform3D(-4.37114e-08, -1, 0, -4.37114e-08, 1.91069e-15, -1, 1, -4.37114e-08, -4.37114e-08, 0.8, 0, 1.5)
+shape = SubResource("ConvexPolygonShape3D_376hv")
