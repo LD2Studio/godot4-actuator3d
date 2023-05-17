@@ -80,7 +80,7 @@ surface_material_override/0 = SubResource("StandardMaterial3D_itohb")
 shape = SubResource("BoxShape3D_17b1o")
 
 [node name="FreeActuator3D" type="RigidBody3D" parent="HingeDevice"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.8)
+transform = Transform3D(0.781433, 0.623989, 0, -0.623989, 0.781433, 0, 0, 0, 1, 0, 0, 0.8)
 can_sleep = false
 script = ExtResource("1_cmpip")
 actuator_type = "FREE"
@@ -227,7 +227,7 @@ text = "RotationActuator3D
 Mode SERVO"
 
 [node name="TranslationDevice" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.34095, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.45905, 0, 0)
 metadata/_edit_group_ = true
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="TranslationDevice"]
@@ -245,9 +245,7 @@ mesh = SubResource("QuadMesh_rofbh")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, 0.8)
 can_sleep = false
 script = ExtResource("3_hk6hc")
-angle_profile = -2.0
-force_gain = 200.0
-max_positive_distance = 0.0
+max_positive_distance = 2.0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="TranslationDevice/TranslationActuator3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.597495, 0, 0)
@@ -265,15 +263,17 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.73847, 0.397978)
 text = "TranslationActuator3D"
 
 [node name="ControlCamera3D" type="Camera3D" parent="."]
-transform = Transform3D(0.999942, -0.00157798, 0.0106575, 0, 0.989216, 0.146467, -0.0107737, -0.146458, 0.989158, 0.0638838, 0.877961, 5.92928)
+transform = Transform3D(0.999968, 0.000588956, -0.00797164, 0, 0.997282, 0.0736806, 0.00799337, -0.0736782, 0.99725, -2.828, 0.647, 8.757)
 current = true
 fov = 44.4
 script = ExtResource("2_1vhfc")
+pivot_pos = Vector3(-2.758, 0, 0)
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7, 0, 0)
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4.20009)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4, 0, 4.20009)
 projection = 1
-size = 5.0
+current = true
+size = 6.0
