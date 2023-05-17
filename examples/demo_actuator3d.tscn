@@ -8,7 +8,8 @@
 [sub_resource type="BoxMesh" id="BoxMesh_atqtq"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_itohb"]
-albedo_color = Color(0.0509804, 0.231373, 0.952941, 1)
+transparency = 1
+albedo_color = Color(0.0509804, 0.231373, 0.952941, 0.121569)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_17b1o"]
 
@@ -227,7 +228,7 @@ text = "RotationActuator3D
 Mode SERVO"
 
 [node name="TranslationDevice" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.45905, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.0094, 0, 0)
 metadata/_edit_group_ = true
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="TranslationDevice"]
@@ -242,10 +243,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.505481)
 mesh = SubResource("QuadMesh_rofbh")
 
 [node name="TranslationActuator3D" type="RigidBody3D" parent="TranslationDevice"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, 0.8)
 can_sleep = false
 script = ExtResource("3_hk6hc")
-max_positive_distance = 2.0
+translation_axis = "X"
+force_constant = 70.0
+velocity_damping = 10.0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="TranslationDevice/TranslationActuator3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.597495, 0, 0)
